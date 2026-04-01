@@ -49,12 +49,11 @@ class RegisterFile(object):
         self.Registers = [0x0 for i in range(32)]
     
     def readRF(self, Reg_addr):
-        # Fill in
-        pass
+        return self.Registers[Reg_addr]
     
     def writeRF(self, Reg_addr, Wrt_reg_data):
-        # Fill in
-        pass
+        if Reg_addr != 0:
+            self.Registers[Reg_addr] = Wrt_reg_data
          
     def outputRF(self, cycle):
         op = ["-"*70+"\n", "State of RF after executing cycle:" + str(cycle) + "\n"]
