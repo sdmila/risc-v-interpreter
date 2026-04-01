@@ -32,8 +32,11 @@ class DataMem(object):
         return int(byte0 + byte1 + byte2 + byte3, 2)
         
     def writeDataMem(self, Address, WriteData):
-        # write data into byte addressable memory
-        pass
+        binary = format(WriteData & 0xFFFFFFFF, '032b')  
+        self.DMem[Address] = binary[0:8]
+        self.DMem[Address + 1] = binary[8:16]
+        self.DMem[Address + 2] = binary[16:24]
+        self.DMem[Address + 3] = binary[24:32]
                      
     def outputDataMem(self):
         resPath = self.ioDir + "\\" + self.id + "_DMEMResult.txt"
