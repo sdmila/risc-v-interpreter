@@ -25,9 +25,11 @@ class DataMem(object):
             self.DMem = [data.replace("\n", "") for data in dm.readlines()]
 
     def readInstr(self, ReadAddress):
-        #read data memory
-        #return 32 bit hex val
-        pass
+        byte0 = self.DMem[ReadAddress]
+        byte1 = self.DMem[ReadAddress + 1]
+        byte2 = self.DMem[ReadAddress + 2]
+        byte3 = self.DMem[ReadAddress + 3]
+        return int(byte0 + byte1 + byte2 + byte3, 2)
         
     def writeDataMem(self, Address, WriteData):
         # write data into byte addressable memory
