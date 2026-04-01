@@ -11,9 +11,11 @@ class InsMem(object):
             self.IMem = [data.replace("\n", "") for data in im.readlines()]
 
     def readInstr(self, ReadAddress):
-        #read instruction memory
-        #return 32 bit hex val
-        pass
+        byte0 = self.IMem[ReadAddress]
+        byte1 = self.IMem[ReadAddress + 1]
+        byte2 = self.IMem[ReadAddress + 2]
+        byte3 = self.IMem[ReadAddress + 3]
+        return byte0 + byte1 + byte2 + byte3
           
 class DataMem(object):
     def __init__(self, name, ioDir):
