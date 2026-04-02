@@ -3,6 +3,11 @@ import argparse
 
 MemSize = 1000 # memory size, in reality, the memory size should be 2^32, but for this lab, for the space resaon, we keep it as this large number, but the memory is still 32-bit addressable.
 
+def sign_extend(value, bits):
+    if value >= (1 << (bits - 1)):
+        value -= (1 << bits)
+    return value
+
 class InsMem(object):
     def __init__(self, name, ioDir):
         self.id = name
