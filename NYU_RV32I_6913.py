@@ -164,6 +164,17 @@ class Core(object):
         self.ext_imem = imem
         self.ext_dmem = dmem
 
+    def reportMetrics(self, core_name):
+        cycles = self.cycle
+        insts  = self.inst_count
+        ipc = insts / cycles if cycles > 0 else 0
+        cpi = cycles / insts if insts > 0 else 0
+        report = ["=" * 40, f"Performance Metrics — {core_name}",  "=" * 40, f"Total Cycles: {cycles}", f"Instructions Executed: {insts}", f"CPI: {cpi:.4f}", f"IPC: {ipc:.4f}", "=" * 40]
+        for line in report:
+            print(line)
+        with open(self.ioDir + "PerformanceMetrics.txt", "w") as f:
+            f.write("\n".join(report) + "\n")
+
 class SingleStageCore(Core):
     def __init__(self, ioDir, imem, dmem):
         super(SingleStageCore, self).__init__(ioDir + "\\SS_", imem, dmem)
@@ -228,14 +239,19 @@ class FiveStageCore(Core):
     def __init__(self, ioDir, imem, dmem):
         super(FiveStageCore, self).__init__(ioDir + "\\FS_", imem, dmem)
         self.opFilePath = ioDir + "\\StateResult_FS.txt"
-        self.inst_count = 0 
+        self.inst_count = 0
         self.stall_count = 0
+        self.state.ID["nop"] = True
+        self.state.EX["nop"] = True
+        self.state.MEM["nop"] = True
+        self.state.WB["nop"] = True
 
     def step(self):
         self.nextState = State()
         if not self.state.WB["nop"]:
             if self.state.WB["wrt_enable"]:
                 self.myRF.writeRF(self.state.WB["Wrt_reg_addr"], self.state.WB["Wrt_data"])
+            self.inst_count += 1
         else:
             self.nextState.WB["nop"] = True
         if not self.state.MEM["nop"]:
@@ -293,6 +309,7 @@ class FiveStageCore(Core):
             else:
                 if (not self.state.EX["nop"] and self.state.EX["rd_mem"] and self.state.EX["Wrt_reg_addr"] != 0 and (self.state.EX["Wrt_reg_addr"] == rs1 or self.state.EX["Wrt_reg_addr"] == rs2)):
                     stall = True
+                    self.stall_count += 1
                 if not stall:
                     rs1_val = self.myRF.readRF(rs1)
                     rs2_val = self.myRF.readRF(rs2)
@@ -449,3 +466,5 @@ if __name__ == "__main__":
     # dump SS and FS data mem.
     dmem_ss.outputDataMem()
     dmem_fs.outputDataMem()
+    ssCore.reportMetrics("Single-Stage Core")
+    fsCore.reportMetrics("Five-Stage Core")
