@@ -1,2 +1,0 @@
-# risc-v-interpreter
- 
